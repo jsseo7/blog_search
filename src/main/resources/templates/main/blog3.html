@@ -1,0 +1,185 @@
+<html>
+
+<head>
+	<th:block th:replace="fragments/config :: configFragment"></th:block>
+	<meta charset="UTF-8">
+	<title>블로그 서치 메인 페이지</title>
+</head>
+
+<body>
+	<div class="form-group row">
+		<label class="col-sm-2 col-form-label">URL</label>
+		<div class="col-sm-10">
+			<input type="text" class="form-control" id="idUrl" placeholder="URL을 입력해주세요."
+				value="https://brunch.co.kr/@tourism">
+		</div>
+	</div>
+
+	<div class="form-group row">
+		<label class="col-sm-2 col-form-label">키워드</label>
+		<div class="col-sm-10">
+			<input type="text" class="form-control" id="idKeyword" placeholder="키워드를 입력해주세요.">
+			<button onclick="searchBlog();">검색</button>
+		</div>
+	</div>
+
+	<div class="table-responsive">
+		<table id="orderingTable" class="table table-bordered table-hover table-striped" style="width: 100%">
+			<thead>
+				<tr>
+					<th>제목</th>
+					<th>내용</th>
+					<th>url</th>
+					<th>블로그 이름</th>
+					<th>썸네일</th>
+					<th>등록시간</th>
+					<th>Debit</th>
+					<th>Kredit</th>
+					<th>Maksady</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:if="${orderings.empty}">
+					<td colspan="10"> Maglumat tapylmady </td>
+				</tr>
+				<tr th:each="item : ${orderings}" th:id="${item.id}">
+					<td><span th:text="${item.id}">ID</span></td>
+					<td><span th:text="${item.date}">Sene</span></td>
+					<td><span th:text="${item.docNumber}">Dok Nomer</span></td>
+					<td><span th:text="${item.code}">Kod</span></td>
+					<td><span th:text="${item.account}">Hasap nomery</span></td>
+					<td><span th:text="${item.currency}">Walyuta</span></td>
+					<td><span th:text="${item.debit}">Debit</span></td>
+					<td><span th:text="${item.credit}">Kredit</span></td>
+					<td><span th:text="${item.description}">Maksady</span></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+</body>
+<script>
+
+	$(function () {
+		var table = $('#orderingTable').DataTable({
+			processing: true,
+			serverSide: true,
+			ajax: {
+				type: "GET",
+				url: 'https://dapi.kakao.com/v2/search/blog',
+				data: {query: msg, size: 50},
+				headers: {Authorization: authKey},
+			},
+			columns: [
+				{data: 'id'},
+				{data: 'date'},
+				{data: 'docNumber'},
+				{data: 'code'},
+				{data: 'account'},
+				{data: 'currency'},
+				{data: 'debit'},
+				{data: 'credit'},
+				{data: 'description'},
+			]
+		});
+	});
+
+
+	var authKey = "KakaoAK c71c96f80628b4c6cd9a8491bf10f052";
+
+
+	function searchBlog() {
+
+		var form = $("#form").serialize();
+
+		var msg = $("#idUrl").val();
+		var keyword = $("#idKeyword").val();
+
+		if (keyword != null) {
+			msg = msg + " " + keyword;
+		}
+
+		var table = $('#orderingTable').DataTable({
+			processing: true,
+			serverSide: true,
+			ajax: {
+				type: "GET",
+				url: 'https://dapi.kakao.com/v2/search/blog',
+				data: {query: msg, size: 50},
+				headers: {Authorization: authKey},
+			},
+			columns: [
+				{data: 'title'},
+				{data: 'contents'},
+				{data: 'url'},
+				{data: 'blogname'},
+				{data: 'thumbnail'},
+			]
+		});
+
+		//$.ajax({
+		//	type: 'GET',
+		//	url: 'https://dapi.kakao.com/v2/search/blog',
+		//	data: {query: msg, size: 50},
+		//	headers: {Authorization: authKey},
+		//	success: function (resultMap) {
+		//		debugger;
+		//
+		//		if (res.meta.total_count == 0) {
+		//			alert("데이터가 없습니다.");
+		//		}
+		//
+		//		$("table").bootstrapTable('destroy').bootstrapTable({data: res.documents});
+		//	}
+		//});
+
+		//
+		//$.ajax({
+		//	type: 'GET',
+		//	url: 'https://openapi.naver.com/v1/search/blog.json',
+		//	data: { query: $("#idSearchData").val() },
+		//	headers: { "X-Naver-Client-Id": "NizjeMzYMtrvW5ZqtuwI"
+		//		,		"X-Naver-Client-Secret" : "6Jt2m8TJmd"},
+		//	success: function (res) {
+		//		alert(res.documents);
+		//		$("table").bootstrapTable('destroy').bootstrapTable({data:res.documents});				
+		//	}
+		//});
+	}
+
+	function imageFormatter(value, row, index) {
+		return [
+			'<img src="' + row.thumbnail + '"></img>'
+		].join('');
+	}
+
+	$(function () {
+		initTable();
+	})
+
+	function initTable() {
+		$("#table").bootstrapTable({
+			height: 550,
+			columns: [
+				{
+					field: 'title',
+					align: 'center',
+					valign: 'middle'
+				}, {
+					title: 'contents',
+					field: 'id',
+					align: 'center',
+					valign: 'middle',
+					sortable: true,
+				}, {
+					title: 'url',
+					align: 'center'
+				}
+			]
+		})
+	}
+
+
+</script>
+
+</html>

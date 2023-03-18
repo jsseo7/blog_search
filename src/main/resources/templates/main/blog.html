@@ -7,41 +7,89 @@
 </head>
 
 <body>
+	<div class="starter-template">
+		<div class="input-group row">
+			<label class="col-sm-2 col-form-label">URL</label>
+			<div class="col-sm-3">
+				<input type="text" class="form-control" id="idUrl" placeholder="URL을 입력해주세요." value="https://brunch.co.kr">
+			</div>
+		</div>
 
-	<input type="text" id="idSearchData" size="40" placeholder="검색어를 입력해주세요." value="https://brunch.co.kr/@tourism">
-	<button onclick="searchBlog();">검색</button>
-
-	<table id="table" data-height="800" data-filter-control="true" data-fixed-columns="true" data-pagination="true" 
-		data-page-size="10" data-page-list="[10, 25, 50, 100, All]" data-show-refresh="true" >
-	
-		<thead>
-			<tr>
-				<th data-field="title">제목</th>
-				<th data-field="contents">내용</th>
-				<th data-field="url">url</th>
-				<th data-field="blogname">블로그 이름</th>
-				<th data-field="thumbnail">썸네일</th>
-				<th data-field="datetime">등록시간</th>																
-			</tr>
-		</thead>
-
-	</table>
+		<div class="input-group row">
+			<label class="col-sm-2 col-form-label">키워드</label>
+			<div class="col-sm-3">
+				<input type="text" class="form-control" id="idKeyword" placeholder="키워드를 입력해주세요.">
+			</div>
+		</div>
 
 
+		<div class="input-group">
+			<label class="col-sm-2 col-form-label">정렬</label>
+			<select class="col-sm-3" id="selectType">
+				<option value="accuracy" selected>정확도순</option>
+				<option value="recency">최신순</option>
+			</select>
+			<button class="btn btn-outline-secondary" onclick="searchBlog('1');">검색</button>
+		</div>
+
+		<table id="table" data-height="600" data-fixed-columns="true" data-page-size="10">
+			<thead>
+				<tr>
+					<th data-with="50" 	data-halign="center" data-align="center" data-formatter="numberFormatter">번호</th>
+					<th data-with="300" data-halign="center" data-align="left" data-sortable="true" data-field="title">제목</th>
+					<th data-with="500" data-halign="center" data-align="left" data-sortable="true" data-field="contents">내용</th>
+					<th data-with="200" data-halign="center" data-align="left" data-sortable="true" data-field="url" data-formatter="linkFormatter">url</th>
+					<th data-with="100" data-halign="center" data-align="center" data-sortable="true" data-field="blogname">블로그 이름</th>
+					<th data-with="200" data-halign="center" data-align="center" data-sortable="true" data-field="thumbnail" data-formatter="imageFormatter">썸네일</th>
+					<th data-with="100" data-halign="center" data-align="center" data-sortable="true" data-field="datetime" data-formatter="timeFormatter">등록시간</th>
+				</tr>
+			</thead>
+		</table>
+
+		<ul id="pagination" class="pagination-sm"></ul>
+	</div>
 </body>
 <script>
 
-	function searchBlog() {
+	var authKey = "KakaoAK c71c96f80628b4c6cd9a8491bf10f052";
+	var nowPage = 1;
+
+	function searchBlog(page) {
+
+		var query = $("#idUrl").val();
+		var keyword = $("#idKeyword").val();
 		
+		if (keyword != null) {
+			query = query + " " + keyword;
+		}
+
+		var sort = $("#selectType").val();
+		var size = 10;
+
 		$.ajax({
 			type: 'GET',
 			url: 'https://dapi.kakao.com/v2/search/blog',
-			data: { query: $("#idSearchData").val() },
-			headers: { Authorization: "KakaoAK c71c96f80628b4c6cd9a8491bf10f052"},
+			data: {query: query, sort: sort, page: page, size: size},
+			headers: {Authorization: authKey},
 			success: function (res) {
-				$("table").bootstrapTable('destroy').bootstrapTable({data:res.documents});				
+
+				if (res.meta.total_count == 0) {
+					$('#pagination').twbsPagination('destroy');
+				} else {
+					$('#pagination').twbsPagination({
+						totalPages: Math.ceil(res.meta.total_count / size),
+						visiblePages: size,
+						onPageClick: function (event, page) {
+							searchBlog(page);
+							nowPage = page;
+						}
+					});
+				}
+
+				$("table").bootstrapTable('destroy').bootstrapTable({data: res.documents});
 			}
 		});
+
 		//
 		//$.ajax({
 		//	type: 'GET',
@@ -56,33 +104,35 @@
 		//});
 	}
 
+	function numberFormatter(value, row, index) {
+		return index + 1 + ((nowPage - 1) * 10);
+	}
+
+	function linkFormatter(value, row, index){
+		return [
+			'<a href="' + row.url + '">' + row.url + '</a>'
+		].join('');
+	}
+
+	function imageFormatter(value, row, index) {
+		return [
+			'<img src="' + row.thumbnail + '"></img>'
+		].join('');
+	}
+
+	function timeFormatter(value, row, index) {	
+		if(value != null) {
+			return value.replace('T', ' ').split('.')[0];				
+		}
+	}
+
 	$(function () {
 		initTable();
 	})
 
 	function initTable() {
-		$("#table").bootstrapTable({
-			height: 550,
-			columns: [
-				{
-					field: 'title',
-					align: 'center',
-					valign: 'middle'
-				}, {
-					title: 'contents',
-					field: 'id',
-					align: 'center',
-					valign: 'middle',
-					sortable: true,
-				}, {
-					title: 'url',
-					align: 'center'
-				}
-			]
-		})
+		$("#table").bootstrapTable();
 	}
 
-
 </script>
-
 </html>
