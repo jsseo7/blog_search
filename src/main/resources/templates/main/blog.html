@@ -1,0 +1,88 @@
+<html>
+
+<head>
+	<th:block th:replace="fragments/config :: configFragment"></th:block>
+	<meta charset="UTF-8">
+	<title>블로그 서치 메인 페이지</title>
+</head>
+
+<body>
+
+	<input type="text" id="idSearchData" size="40" placeholder="검색어를 입력해주세요." value="https://brunch.co.kr/@tourism">
+	<button onclick="searchBlog();">검색</button>
+
+	<table id="table" data-height="800" data-filter-control="true" data-fixed-columns="true" data-pagination="true" 
+		data-page-size="10" data-page-list="[10, 25, 50, 100, All]" data-show-refresh="true" >
+	
+		<thead>
+			<tr>
+				<th data-field="title">제목</th>
+				<th data-field="contents">내용</th>
+				<th data-field="url">url</th>
+				<th data-field="blogname">블로그 이름</th>
+				<th data-field="thumbnail">썸네일</th>
+				<th data-field="datetime">등록시간</th>																
+			</tr>
+		</thead>
+
+	</table>
+
+
+</body>
+<script>
+
+	function searchBlog() {
+		
+		$.ajax({
+			type: 'GET',
+			url: 'https://dapi.kakao.com/v2/search/blog',
+			data: { query: $("#idSearchData").val() },
+			headers: { Authorization: "KakaoAK c71c96f80628b4c6cd9a8491bf10f052"},
+			success: function (res) {
+				$("table").bootstrapTable('destroy').bootstrapTable({data:res.documents});				
+			}
+		});
+		//
+		//$.ajax({
+		//	type: 'GET',
+		//	url: 'https://openapi.naver.com/v1/search/blog.json',
+		//	data: { query: $("#idSearchData").val() },
+		//	headers: { "X-Naver-Client-Id": "NizjeMzYMtrvW5ZqtuwI"
+		//		,		"X-Naver-Client-Secret" : "6Jt2m8TJmd"},
+		//	success: function (res) {
+		//		alert(res.documents);
+		//		$("table").bootstrapTable('destroy').bootstrapTable({data:res.documents});				
+		//	}
+		//});
+	}
+
+	$(function () {
+		initTable();
+	})
+
+	function initTable() {
+		$("#table").bootstrapTable({
+			height: 550,
+			columns: [
+				{
+					field: 'title',
+					align: 'center',
+					valign: 'middle'
+				}, {
+					title: 'contents',
+					field: 'id',
+					align: 'center',
+					valign: 'middle',
+					sortable: true,
+				}, {
+					title: 'url',
+					align: 'center'
+				}
+			]
+		})
+	}
+
+
+</script>
+
+</html>
