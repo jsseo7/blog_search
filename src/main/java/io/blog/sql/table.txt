@@ -1,0 +1,6 @@
+set mode MySQL;
+
+CREATE TABLE TB_SEARCH_WORD(
+		POPULAR_WORD nvarchar(100)	not null primary key
+	,	SEARCH_COUNT int			not null default 0
+);

@@ -8,40 +8,77 @@
 
 <body>
 	<div class="starter-template">
-		<div class="input-group row">
-			<label class="col-sm-2 col-form-label">URL</label>
-			<div class="col-sm-3">
-				<input type="text" class="form-control" id="idUrl" placeholder="URL을 입력해주세요." value="https://brunch.co.kr">
+
+		<div class='row'>
+			<div class='col-sm-6'>
+
+				<div class="input-group row">
+					<label class="col-sm-2 col-form-label">키워드</label>
+					<div class="col-sm-3">
+						<input type="text" class="form-control" id="idKeyword" placeholder="키워드를 입력해주세요." value="사랑">
+					</div>
+				</div>
+
+				<div class="input-group row">
+					<label class="col-sm-2 col-form-label">URL</label>
+					<div class="col-sm-3">
+						<input type="text" class="form-control" id="idUrl" placeholder="URL을 입력해주세요.">
+					</div>
+				</div>
+
+				<div class="input-group">
+					<label class="col-sm-2 col-form-label">정렬</label>
+					<select class="col-sm-3" id="selectType">
+						<option value="accuracy" selected>정확도순</option>
+						<option value="recency">최신순</option>
+					</select>
+					<button class="btn btn-outline-secondary" onclick="searchBlog(1, 'kakao', true);">검색</button>
+				</div>
+
+				<div class="input-group">
+					<label class="col-sm-2 col-form-label">전체 게시글 수</label>
+					<label id="idTotalPage" class="col-sm-2 col-form-label"></label>
+				</div>
+
+				<div class="input-group">
+					<label class="col-sm-2 col-form-label">현재 페이지</label>
+					<label id="idCurrentPage" class="col-sm-2 col-form-label"></label>
+				</div>
+
+				<div class="input-group">
+					<label class="col-sm-2 col-form-label">마지막 페이지 여부</label>
+					<label id="idIsEnd" class="col-sm-2 col-form-label"></label>
+				</div>
+			</div>
+			<div class='col-sm-6'>
+				<table id="rankTable" data-height="300" data-fixed-columns="true">
+					<thead>
+						<tr>
+							<th data-field="num" data-with="50" data-halign="center" data-align="center">순위</th>
+							<th data-field="popularWord" data-with="50" data-halign="center" data-align="center">검색어</th>
+							<th data-field="searchCount" data-with="50" data-halign="center" data-align="center">조회수</th>
+						</tr>
+					</thead>
+				</table>
 			</div>
 		</div>
 
-		<div class="input-group row">
-			<label class="col-sm-2 col-form-label">키워드</label>
-			<div class="col-sm-3">
-				<input type="text" class="form-control" id="idKeyword" placeholder="키워드를 입력해주세요.">
-			</div>
-		</div>
-
-
-		<div class="input-group">
-			<label class="col-sm-2 col-form-label">정렬</label>
-			<select class="col-sm-3" id="selectType">
-				<option value="accuracy" selected>정확도순</option>
-				<option value="recency">최신순</option>
-			</select>
-			<button class="btn btn-outline-secondary" onclick="searchBlog('1');">검색</button>
-		</div>
-
-		<table id="table" data-height="600" data-fixed-columns="true" data-page-size="10">
+		<table id="mainTable" data-height="600" data-fixed-columns="true">
 			<thead>
 				<tr>
-					<th data-with="50" 	data-halign="center" data-align="center" data-formatter="numberFormatter">번호</th>
-					<th data-with="300" data-halign="center" data-align="left" data-sortable="true" data-field="title">제목</th>
-					<th data-with="500" data-halign="center" data-align="left" data-sortable="true" data-field="contents">내용</th>
-					<th data-with="200" data-halign="center" data-align="left" data-sortable="true" data-field="url" data-formatter="linkFormatter">url</th>
-					<th data-with="100" data-halign="center" data-align="center" data-sortable="true" data-field="blogname">블로그 이름</th>
-					<th data-with="200" data-halign="center" data-align="center" data-sortable="true" data-field="thumbnail" data-formatter="imageFormatter">썸네일</th>
-					<th data-with="100" data-halign="center" data-align="center" data-sortable="true" data-field="datetime" data-formatter="timeFormatter">등록시간</th>
+					<th data-with="50" data-halign="center" data-align="center" data-formatter="numberFormatter">번호</th>
+					<th data-with="300" data-halign="center" data-align="left" data-sortable="true" data-field="title">
+						제목</th>
+					<th data-with="500" data-halign="center" data-align="left" data-sortable="true"
+						data-field="contents">내용</th>
+					<th data-with="200" data-halign="center" data-align="left" data-sortable="true" data-field="url"
+						data-formatter="linkFormatter">url</th>
+					<th data-with="100" data-halign="center" data-align="center" data-sortable="true"
+						data-field="blogname">블로그 이름</th>
+					<th data-with="200" data-halign="center" data-align="center" data-sortable="true"
+						data-field="thumbnail" data-formatter="imageFormatter">썸네일</th>
+					<th data-with="100" data-halign="center" data-align="center" data-sortable="true"
+						data-field="datetime" data-formatter="timeFormatter">등록시간</th>
 				</tr>
 			</thead>
 		</table>
@@ -51,64 +88,131 @@
 </body>
 <script>
 
-	var authKey = "KakaoAK c71c96f80628b4c6cd9a8491bf10f052";
-	var nowPage = 1;
+	var kakaoInfo = {
+		url: "https://dapi.kakao.com/v2/search/blog",
+		accessHeader: {Authorization: "KakaoAK c71c96f80628b4c6cd9a8491bf10f052"}
+	}
 
-	function searchBlog(page) {
+	var naverInfo = {
+		url: "https://openapi.naver.com/v1/search/blog.json",
+		accessHeader: {"X-Naver-Client-Id": "NizjeMzYMtrvW5ZqtuwI", "X-Naver-Client-Secret": "6Jt2m8TJmd"}
+	}
 
-		var query = $("#idUrl").val();
-		var keyword = $("#idKeyword").val();
+	var currentPage = 1;
+
+	$(function () {
+		$("#mainTable").bootstrapTable();
 		
-		if (keyword != null) {
-			query = query + " " + keyword;
+		getSearchWordTop10();
+		
+		setInterval(function() {
+			getSearchWordTop10();	
+		}, 5000);
+	})
+
+	function searchBlog(page, apiType, destroyPage) {
+
+		var accessInfo;
+
+		if (apiType == 'kakao') {
+			accessInfo = kakaoInfo;
+		} else if (apiType == 'naver') {
+			accessInfo = naverInfo;
 		}
+
+		if (accessInfo == null) {
+			alert("조회에 실패하였습니다.");
+			return;
+		}
+
+		if ($("#idKeyword").val() == '') {
+			alert("키워드를 입력해주세요.");
+			return;
+		}
+
+		var query = ($("#idUrl").val() != null)
+			? $("#idUrl").val() + " " + $("#idKeyword").val()
+			: $("#idKeyword").val();
 
 		var sort = $("#selectType").val();
 		var size = 10;
 
+		countSearchWord(query);
+
 		$.ajax({
 			type: 'GET',
-			url: 'https://dapi.kakao.com/v2/search/blog',
+			url: accessInfo.url,
 			data: {query: query, sort: sort, page: page, size: size},
-			headers: {Authorization: authKey},
+			headers: accessInfo.accessHeader,
 			success: function (res) {
 
 				if (res.meta.total_count == 0) {
 					$('#pagination').twbsPagination('destroy');
-				} else {
-					$('#pagination').twbsPagination({
-						totalPages: Math.ceil(res.meta.total_count / size),
-						visiblePages: size,
-						onPageClick: function (event, page) {
-							searchBlog(page);
-							nowPage = page;
-						}
-					});
+
+					$("#mainTable").bootstrapTable('destroy').bootstrapTable({data: res.documents});
+					$('#idTotalPage').html(res.meta.total_count);
+					$('#idCurrentPage').html(currentPage);
+					$('#idIsEnd').html(res.meta.is_end.toString());
+					return;
+				} else if (destroyPage == true) {
+					$('#pagination').twbsPagination('destroy');
 				}
 
-				$("table").bootstrapTable('destroy').bootstrapTable({data: res.documents});
+				$('#pagination').twbsPagination({
+					totalPages: (Math.ceil(res.meta.total_count / size) > 50) ? 50 : Math.ceil(res.meta.total_count / size),
+					visiblePages: size,
+					startPage: 1,
+					onPageClick: function (event, page) {
+						currentPage = page;
+						searchBlog(currentPage, apiType, false);
+					}
+				});
+
+				$("#mainTable").bootstrapTable('destroy').bootstrapTable({data: res.documents});
+				$('#idTotalPage').html(res.meta.total_count);
+				$('#idCurrentPage').html(currentPage);
+				$('#idIsEnd').html(res.meta.is_end.toString());
+			},
+			error: function (request, status, error) {
+				alert("에러가 발생하였습니다.\n" + "code : " + request.status + "\n" + "message : " + request.responseText + "\n" + "error : " + error);
 			}
 		});
+	}
 
-		//
-		//$.ajax({
-		//	type: 'GET',
-		//	url: 'https://openapi.naver.com/v1/search/blog.json',
-		//	data: { query: $("#idSearchData").val() },
-		//	headers: { "X-Naver-Client-Id": "NizjeMzYMtrvW5ZqtuwI"
-		//		,		"X-Naver-Client-Secret" : "6Jt2m8TJmd"},
-		//	success: function (res) {
-		//		alert(res.documents);
-		//		$("table").bootstrapTable('destroy').bootstrapTable({data:res.documents});				
-		//	}
-		//});
+	function getSearchWordTop10() {
+
+		$.ajax({
+			type: 'GET',
+			url: "/db/getSearchWordTop10",
+			success: function (res) {
+				$("#rankTable").bootstrapTable('destroy').bootstrapTable({data: res});
+			},
+			error: function (request, status, error) {
+				alert("에러가 발생하였습니다.\n" + "code : " + request.status + "\n" + "message : " + request.responseText + "\n" + "error : " + error);
+			}
+		});
+	}
+
+	function countSearchWord(searchWord) {
+		$.ajax({
+			type: "GET",
+			url: "/db/setSearchWord",
+			data: {word: searchWord},
+			success: function (res) {
+				//alert(res);
+				//console.log(res);
+			},
+			error: function (request, status, error) {
+				console.log("에러가 발생하였습니다.\n" + "code : " + request.status + "\n" + "message : " + request.responseText + "\n" + "error : " + error);
+			}
+		});
 	}
 
 	function numberFormatter(value, row, index) {
-		return index + 1 + ((nowPage - 1) * 10);
+		return index + 1 + ((currentPage - 1) * 10);
 	}
 
-	function linkFormatter(value, row, index){
+	function linkFormatter(value, row, index) {
 		return [
 			'<a href="' + row.url + '">' + row.url + '</a>'
 		].join('');
@@ -120,19 +224,11 @@
 		].join('');
 	}
 
-	function timeFormatter(value, row, index) {	
-		if(value != null) {
-			return value.replace('T', ' ').split('.')[0];				
+	function timeFormatter(value, row, index) {
+		if (value != null) {
+			return value.replace('T', ' ').split('.')[0];
 		}
 	}
-
-	$(function () {
-		initTable();
-	})
-
-	function initTable() {
-		$("#table").bootstrapTable();
-	}
-
 </script>
+
 </html>
