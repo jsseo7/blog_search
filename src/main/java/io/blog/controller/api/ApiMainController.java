@@ -23,8 +23,8 @@ public class ApiMainController {
 	DbService dbService;
 
 	@GetMapping("/setSearchWord")
-	public Boolean setSearchWord(String searchWord) throws Exception{
-		return dbService.setSearchWord(searchWord);
+	public Boolean setSearchWord(String word) throws Exception{
+		return dbService.setSearchWord(word);
 	}
 	
 	@GetMapping("/getSearchWordTop10")

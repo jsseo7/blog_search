@@ -107,7 +107,7 @@
 		
 		setInterval(function() {
 			getSearchWordTop10();	
-		}, 5000);
+		}, 10000);
 	})
 
 	function searchBlog(page, apiType, destroyPage) {
@@ -136,9 +136,10 @@
 
 		var sort = $("#selectType").val();
 		var size = 10;
-
-		countSearchWord(query);
-
+		if(destroyPage){
+			countSearchWord(query);	
+		}
+	
 		$.ajax({
 			type: 'GET',
 			url: accessInfo.url,
@@ -174,7 +175,7 @@
 				$('#idIsEnd').html(res.meta.is_end.toString());
 			},
 			error: function (request, status, error) {
-				alert("에러가 발생하였습니다.\n" + "code : " + request.status + "\n" + "message : " + request.responseText + "\n" + "error : " + error);
+				console.log("에러가 발생하였습니다.\n" + "code : " + request.status + "\n" + "message : " + request.responseText + "\n" + "error : " + error);
 			}
 		});
 	}
@@ -188,19 +189,19 @@
 				$("#rankTable").bootstrapTable('destroy').bootstrapTable({data: res});
 			},
 			error: function (request, status, error) {
-				alert("에러가 발생하였습니다.\n" + "code : " + request.status + "\n" + "message : " + request.responseText + "\n" + "error : " + error);
+				console.log("에러가 발생하였습니다.\n" + "code : " + request.status + "\n" + "message : " + request.responseText + "\n" + "error : " + error);
 			}
 		});
 	}
 
 	function countSearchWord(searchWord) {
+		
 		$.ajax({
 			type: "GET",
 			url: "/db/setSearchWord",
 			data: {word: searchWord},
 			success: function (res) {
-				//alert(res);
-				//console.log(res);
+				
 			},
 			error: function (request, status, error) {
 				console.log("에러가 발생하였습니다.\n" + "code : " + request.status + "\n" + "message : " + request.responseText + "\n" + "error : " + error);

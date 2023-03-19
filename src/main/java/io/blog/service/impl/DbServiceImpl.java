@@ -17,18 +17,16 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Service
 public class DbServiceImpl implements DbService{
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	
 	@Autowired
 	WordRepository wordRepository;
 
 	public Boolean setSearchWord(String word) {
 		try {
-			
 			if(word == null) {
 				return false;
 			}
-			//wordRepository.setPopularWord(word);	
+			wordRepository.setPopularWord(word);	
 			return true;
 		} catch (Exception e){
 			return false;

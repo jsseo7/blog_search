@@ -28,8 +28,8 @@ public interface WordRepository extends JpaRepository<WordDto, Long> {
 						:word
 					,	1
 				)
-				#ON DUPLICATE KEY UPDATE
-				#	SEARCH_COUNT = SEARCH_COUNT + 1;
+				ON DUPLICATE KEY UPDATE
+					SEARCH_COUNT = SEARCH_COUNT + 1;
 			""";
 	
 	static final String SEARCH_QUERY = """
@@ -42,10 +42,10 @@ public interface WordRepository extends JpaRepository<WordDto, Long> {
 				ORDER BY SEARCH_COUNT DESC;
 			""";
 	
-	//@Transactional
-	//@Modifying
-	//@Query(value = SET_QUERY, nativeQuery = true)
-	//public int setPopularWord(@Param("word") String word);
+	@Transactional
+	@Modifying
+	@Query(value = SET_QUERY, nativeQuery = true)
+	public int setPopularWord(@Param("word") String word);
 
 	@Transactional
 	@Query(value = SEARCH_QUERY, nativeQuery = true)	
