@@ -1,15 +1,9 @@
 package io.blog.service.impl;
 
 
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import io.blog.common.msg.ResMsg;
-import io.blog.model.WordDto;
 import io.blog.repository.WordRepository;
 import io.blog.service.DbService;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +20,8 @@ public class DbServiceImpl implements DbService{
 			if(word == null) {
 				return false;
 			}
+			
+			wordRepository.runMysql();
 			wordRepository.setPopularWord(word);	
 			return true;
 		} catch (Exception e){

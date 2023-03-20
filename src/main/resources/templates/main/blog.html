@@ -130,23 +130,33 @@
 			return;
 		}
 
-		var query = ($("#idUrl").val() != null)
-			? $("#idUrl").val() + " " + $("#idKeyword").val()
-			: $("#idKeyword").val();
-
+		var query = $("#idKeyword").val();
+		var url = $("#idUrl").val();
+		var keyword = $("#idKeyword").val();
+		
+		if(url != ''){
+			if(url.charAt(url.length-1) == '/'){
+				query = url + "%40" + keyword;
+			} else{
+				query = url + "%2F%40" + keyword;
+			}
+		}
+	
 		var sort = $("#selectType").val();
 		var size = 10;
+		
 		if(destroyPage){
-			countSearchWord(query);	
+			countSearchWord(keyword);	
 		}
 	
 		$.ajax({
 			type: 'GET',
-			url: accessInfo.url,
+			url: "/api/getTableByKeyword",
 			data: {query: query, sort: sort, page: page, size: size},
-			headers: accessInfo.accessHeader,
-			success: function (res) {
-
+			success: function (data) {
+					
+				var res = JSON.parse(data);
+				
 				if (res.meta.total_count == 0) {
 					$('#pagination').twbsPagination('destroy');
 

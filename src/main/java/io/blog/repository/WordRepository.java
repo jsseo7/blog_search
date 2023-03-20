@@ -15,9 +15,12 @@ import io.blog.model.WordDto;
 
 public interface WordRepository extends JpaRepository<WordDto, Long> {
 	
-	static final String SET_QUERY = """
+	
+	static final String MYSQL_QUERY = """
 				set mode MySQL;
+			""";
 
+	static final String SET_QUERY = """
 				INSERT INTO TB_SEARCH_WORD
 				(
 						POPULAR_WORD
@@ -41,6 +44,11 @@ public interface WordRepository extends JpaRepository<WordDto, Long> {
 				FROM	TB_SEARCH_WORD
 				ORDER BY SEARCH_COUNT DESC;
 			""";
+	
+	@Transactional
+	@Modifying
+	@Query(value = MYSQL_QUERY, nativeQuery = true)	
+	public int runMysql();
 	
 	@Transactional
 	@Modifying

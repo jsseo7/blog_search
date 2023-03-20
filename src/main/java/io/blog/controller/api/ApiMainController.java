@@ -4,31 +4,36 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.blog.common.msg.ResMsg;
 import io.blog.service.DbService;
+import io.blog.service.SearchService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/db")
 public class ApiMainController {
+
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@Autowired
 	DbService dbService;
 
-	@GetMapping("/setSearchWord")
+	@Autowired
+	SearchService searchService;
+	
+	@GetMapping("/db/setSearchWord")
 	public Boolean setSearchWord(String word) throws Exception{
-		return dbService.setSearchWord(word);
+		return dbService.setSearchWord(word.trim());
 	}
 	
-	@GetMapping("/getSearchWordTop10")
+	@GetMapping("/db/getSearchWordTop10")
 	public Object getSearchWordTop10() throws Exception{		
 		return dbService.getSearchWordTop10();
+	}
+	
+	@GetMapping("/api/getTableByKeyword")
+	public Object getTableByKeyword(String query, String sort, int page, int size) {
+		return searchService.getTableByKeyword(query.trim(), sort, page, size);
 	}
 }
