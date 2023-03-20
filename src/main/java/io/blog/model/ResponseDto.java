@@ -1,7 +1,6 @@
 package io.blog.model;
 
 import io.swagger.annotations.ApiModelProperty;
-import kong.unirest.HttpResponse;
 
 public class ResponseDto {
 	

@@ -1,8 +1,6 @@
 package io.blog.service.impl;
 
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import io.blog.model.ResponseDto;
@@ -22,8 +20,6 @@ public class SearchServiceImpl implements SearchService{
 	private final String NAVER_ID = "NizjeMzYMtrvW5ZqtuwI";	
 	private final String NAVER_SECRETKEY = "6Jt2m8TJmd";
 		
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
-
 	public Object getTableByKeyword(String query, String sort, int page, int size) {
 
 		ResponseDto responseDto = new ResponseDto();
