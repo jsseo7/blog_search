@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import io.blog.model.ResponseDto;
 import io.blog.service.SearchService;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
@@ -24,30 +25,32 @@ public class SearchServiceImpl implements SearchService{
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	public Object getTableByKeyword(String query, String sort, int page, int size) {
-	
-		HttpResponse<String> result = connection("kakao", query, sort, page, size);
+
+		ResponseDto responseDto = new ResponseDto();
+
+		HttpResponse<String> result = kakaoApiConnection(query, sort, page, size);	
+		responseDto.setApiType("kakao");
 		
 		if(result.getStatus() != 200) {
-			result = connection("naver", query, sort, page, size);
+			result = naverApiConnection(query, sort, page, size);
+			responseDto.setApiType("naver");
 		}
 		
-		return result.getBody();
+		responseDto.setResData(result.getBody());
+		return responseDto;
 	}
 	
-	public HttpResponse<String> connection(String type, String query, String sort, int page, int size) {
+	public HttpResponse<String> kakaoApiConnection(String query, String sort, int page, int size) {
 				
 		StringBuilder responseData = new StringBuilder();
+		responseData.append(KAKAO_URL);			
 
-		if(type.equals("naver")) {
-			responseData.append(NAVER_URL);
-		} else {
-			responseData.append(KAKAO_URL);			
-		}
-		
 		if(query != null) {
 			responseData.append("?query=" + query);
 		}
 		if(sort != null) {
+			sort = sort.equals("sim") ? sort = "accuracy" : sort;
+			sort = sort.equals("date") ? sort = "recency" : sort;
 			responseData.append("&sort=" + sort);
 		}			
 		if(page != 0) {
@@ -57,10 +60,29 @@ public class SearchServiceImpl implements SearchService{
 			responseData.append("&size=" + size);
 		}		
 		
-		if(type.equals("naver")) {
-			return Unirest.get(responseData.toString()).header("X-Naver-Client-Id", NAVER_ID).header("X-Naver-Client-Secret", NAVER_SECRETKEY).asString();		
-		} else {
-			return Unirest.get(responseData.toString()).header("Authorization", KAKAO_SECRETKEY).asString();					
+		return Unirest.get(responseData.toString()).header("Authorization", KAKAO_SECRETKEY).asString();							
+	}
+
+	public HttpResponse<String> naverApiConnection(String query, String sort, int page, int size) {
+		
+		StringBuilder responseData = new StringBuilder();
+		responseData.append(NAVER_URL);
+			
+		if(query != null) {
+			responseData.append("?query=" + query);
 		}
+		if(sort != null) {
+			sort = sort.equals("accuracy") ? sort = "sim" : sort;
+			sort = sort.equals("recency") ? sort = "date" : sort;
+			responseData.append("&sort=" + sort);
+		}			
+		if(page != 0) {
+			responseData.append("&start=" + page*size);
+		}			
+		if(size != 0) {
+			responseData.append("&display=" + size);
+		}		
+
+		return Unirest.get(responseData.toString()).header("X-Naver-Client-Id", NAVER_ID).header("X-Naver-Client-Secret", NAVER_SECRETKEY).asString();		
 	}
 }

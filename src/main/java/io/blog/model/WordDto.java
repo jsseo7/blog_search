@@ -2,31 +2,28 @@ package io.blog.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AccessLevel;
-import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "TB_SEARCH_WORD")
 public class WordDto {
 
+	@ApiModelProperty(value="순위", example = "1", required = true)
 	@Column(name = "NUM")
 	private Integer num;
 
+	@ApiModelProperty(value="인기검색어", example = "카카오톡", required = true)
 	@Id
 	@Column(name = "POPULAR_WORD")
 	private String popularWord;
 
+	@ApiModelProperty(value="검색횟수", example = "1", required = true)		
 	@Column(name = "SEARCH_COUNT")
 	private Integer searchCount;
 
