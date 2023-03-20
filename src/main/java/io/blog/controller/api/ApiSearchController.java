@@ -26,7 +26,7 @@ public class ApiSearchController {
 	
 	@ApiOperation(value="블로그 검색")
 	@GetMapping("/getTableByKeyword")
-	public Object getTableByKeyword(String query, String sort, int page, int size) {
+	public Object getTableByKeyword(String query, String sort, int page, int size) throws Exception{
 		return searchService.getTableByKeyword(query.trim(), sort, page, size);
 	}
 }

@@ -9,5 +9,4 @@ public class BlogSearchServiceApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(BlogSearchServiceApplication.class, args);
 	}
-
 }
