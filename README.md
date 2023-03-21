@@ -1,3 +1,5 @@
+# jar 실행 파일 위치
+#### https://github.com/jsseo7/blog_search/blob/master/jar/Blog_Search_Service_JSSEO-1.0.0.jar
 
 # 오픈소스
 ## 1. 오픈소스 명 : jquery
