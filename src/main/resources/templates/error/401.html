@@ -1,12 +1,23 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="UTF-8">
-		<title>오류 페이지</title>
-	</head>
-	<body>
-		401 Unauthorized
-		<br>
-		문제가 발생했습니다.
-	</body>
+
+<head>
+	<th:block th:replace="fragments/config :: configFragment"></th:block>
+	<meta charset="UTF-8">
+	<title>오류 페이지</title>
+</head>
+
+<body>
+	<div class="d-flex align-items-center justify-content-center vh-100">
+		<div class="text-center">
+			<h1 class="display-1 fw-bold">401</h1>
+			<p class="fs-3"> <span class="text-danger">Error!</span> Unauthorized.</p>
+			<p class="lead">
+				권한이 없습니다.
+			</p>
+			<a href="/" class="btn btn-primary">Go Home</a>
+		</div>
+	</div>
+</body>
+
 </html>

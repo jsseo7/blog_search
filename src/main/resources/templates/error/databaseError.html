@@ -1,12 +1,23 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="UTF-8">
-		<title>오류 페이지</title>
-	</head>
-	<body>
-		Database Error
-		<br>
-		문제가 발생했습니다.
-	</body>
+
+<head>
+	<th:block th:replace="fragments/config :: configFragment"></th:block>
+	<meta charset="UTF-8">
+	<title>오류 페이지</title>
+</head>
+
+<body>
+	<div class="d-flex align-items-center justify-content-center vh-100">
+		<div class="text-center">
+			<h1 class="display-1 fw-bold">500</h1>
+			<p class="fs-3"> <span class="text-danger">Error!</span> Database Error.</p>
+			<p class="lead">
+				Database 서버에 이상이 생겼습니다.
+			</p>
+			<a href="/" class="btn btn-primary">Go Home</a>
+		</div>
+	</div>
+</body>
+
 </html>
