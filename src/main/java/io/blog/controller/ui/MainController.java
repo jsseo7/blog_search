@@ -13,13 +13,13 @@ public class MainController {
 
 	@ApiOperation(value="index 화면")
 	@GetMapping("/")
-	public String index() {
+	public String index() throws Exception {
 		return "index";
 	}
 
 	@ApiOperation(value="블로그 메인 화면")
 	@GetMapping("/main/blog")
-	public String blog() {
+	public String blog() throws Exception {
 		return "main/blog";
 	}
 }
