@@ -9,102 +9,116 @@
 <body>
 	<div class="starter-template">
 
-		<div class='row'>
-			<div class='col-sm-6'>
+		<div class="one">
+			<h1>jsseo7's '블로그 검색 서비스</h1>
+		</div>
 
-				<div class="input-group row">
-					<label class="col-sm-2 col-form-label">키워드</label>
-					<div class="col-sm-3">
-						<input type="text" class="form-control" id="idKeyword" placeholder="키워드를 입력해주세요." value="사랑">
+		<br>
+
+		<div class="container">
+			<div class='row'>
+				<div class='col-sm-6'>
+
+					<div class="input-group row">
+						<label class="col-sm-2 col-form-label">키워드</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="idKeyword" placeholder="키워드를 입력해주세요.">
+						</div>
+					</div>
+
+					<div class="input-group row">
+						<label class="col-sm-2 col-form-label">URL</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="idUrl" placeholder="URL을 입력해주세요.">
+						</div>
+					</div>
+
+					<div class="input-group">
+						<label class="col-sm-2 col-form-label">정렬</label>
+						<select class="col-sm-8" id="selectType">
+							<option value="accuracy" selected>정확도순</option>
+							<option value="recency">최신순</option>
+						</select>
+						<button class="btn btn-outline-secondary" onclick="searchBlog(1, 'kakao', true);">검색</button>
+					</div>
+
+					<div class="input-group">
+						<label class="col-sm-2 col-form-label">전체 게시글 수</label>
+						<label id="idTotalPage" class="col-sm-2 col-form-label"></label>
+					</div>
+
+					<div class="input-group">
+						<label class="col-sm-2 col-form-label">현재 페이지</label>
+						<label id="idCurrentPage" class="col-sm-2 col-form-label"></label>
 					</div>
 				</div>
-
-				<div class="input-group row">
-					<label class="col-sm-2 col-form-label">URL</label>
-					<div class="col-sm-3">
-						<input type="text" class="form-control" id="idUrl" placeholder="URL을 입력해주세요.">
+				<div class='col-sm-6'>
+					<div class="two">
+						<h3>인기검색어 목록</h3>
 					</div>
-				</div>
-
-				<div class="input-group">
-					<label class="col-sm-2 col-form-label">정렬</label>
-					<select class="col-sm-3" id="selectType">
-						<option value="accuracy" selected>정확도순</option>
-						<option value="recency">최신순</option>
-					</select>
-					<button class="btn btn-outline-secondary" onclick="searchBlog(1, 'kakao', true);">검색</button>
-				</div>
-
-				<div class="input-group">
-					<label class="col-sm-2 col-form-label">전체 게시글 수</label>
-					<label id="idTotalPage" class="col-sm-2 col-form-label"></label>
-				</div>
-
-				<div class="input-group">
-					<label class="col-sm-2 col-form-label">현재 페이지</label>
-					<label id="idCurrentPage" class="col-sm-2 col-form-label"></label>
+					<table id="rankTable" data-height="300" data-fixed-columns="true">
+						<thead>
+							<tr>
+								<th data-field="num" data-with="50" data-halign="center" data-align="center">순위</th>
+								<th data-field="popularWord" data-with="50" data-halign="center" data-align="center">검색어
+								</th>
+								<th data-field="searchCount" data-with="50" data-halign="center" data-align="center">조회수
+								</th>
+							</tr>
+						</thead>
+					</table>
 				</div>
 			</div>
-			<div class='col-sm-6'>
-				<table id="rankTable" data-height="300" data-fixed-columns="true">
+
+			<div id="kakaoDiv" display:block>
+				<table id="kakaoBlogTable" data-height="600" data-fixed-columns="true">
 					<thead>
 						<tr>
-							<th data-field="num" data-with="50" data-halign="center" data-align="center">순위</th>
-							<th data-field="popularWord" data-with="50" data-halign="center" data-align="center">검색어
+							<th data-with="50" data-halign="center" data-align="center"
+								data-formatter="numberFormatter">번호
 							</th>
-							<th data-field="searchCount" data-with="50" data-halign="center" data-align="center">조회수
-							</th>
+							<th data-with="300" data-halign="center" data-align="left" data-sortable="true"
+								data-field="title">
+								제목</th>
+							<th data-with="500" data-halign="center" data-align="left" data-sortable="true"
+								data-field="contents">내용</th>
+							<th data-with="200" data-halign="center" data-align="left" data-sortable="true"
+								data-field="url" data-formatter="kakaoLinkFormatter">url</th>
+							<th data-with="100" data-halign="center" data-align="center" data-sortable="true"
+								data-field="blogname">블로그 이름</th>
+							<th data-with="200" data-halign="center" data-align="center" data-sortable="true"
+								data-field="thumbnail" data-formatter="imageFormatter">썸네일</th>
+							<th data-with="100" data-halign="center" data-align="center" data-sortable="true"
+								data-field="datetime" data-formatter="timeFormatter">등록시간</th>
 						</tr>
 					</thead>
 				</table>
 			</div>
-		</div>
-		<div id="kakaoDiv" display:block>
-			<table id="kakaoBlogTable" data-height="600" data-fixed-columns="true">
-				<thead>
-					<tr>
-						<th data-with="50" data-halign="center" data-align="center" data-formatter="numberFormatter">번호
-						</th>
-						<th data-with="300" data-halign="center" data-align="left" data-sortable="true"
-							data-field="title">
-							제목</th>
-						<th data-with="500" data-halign="center" data-align="left" data-sortable="true"
-							data-field="contents">내용</th>
-						<th data-with="200" data-halign="center" data-align="left" data-sortable="true" data-field="url"
-							data-formatter="kakaoLinkFormatter">url</th>
-						<th data-with="100" data-halign="center" data-align="center" data-sortable="true"
-							data-field="blogname">블로그 이름</th>
-						<th data-with="200" data-halign="center" data-align="center" data-sortable="true"
-							data-field="thumbnail" data-formatter="imageFormatter">썸네일</th>
-						<th data-with="100" data-halign="center" data-align="center" data-sortable="true"
-							data-field="datetime" data-formatter="timeFormatter">등록시간</th>
-					</tr>
-				</thead>
-			</table>
-		</div>
-		<div id="naverDiv" display:block>
-			<table id="naverBlogTable" data-height="600" data-fixed-columns="true">
-				<thead>
-					<tr>
-						<th data-with="50" data-halign="center" data-align="center" data-formatter="numberFormatter">번호
-						</th>
-						<th data-with="300" data-halign="center" data-align="left" data-sortable="true"
-							data-field="title">
-							제목</th>
-						<th data-with="500" data-halign="center" data-align="left" data-sortable="true"
-							data-field="description">내용</th>
-						<th data-with="200" data-halign="center" data-align="left" data-sortable="true"
-							data-field="link" data-formatter="naverLinkFormatter">url</th>
-						<th data-with="100" data-halign="center" data-align="center" data-sortable="true"
-							data-field="bloggername">블로그 이름</th>
-						<th data-with="100" data-halign="center" data-align="center" data-sortable="true"
-							data-field="postdate">등록시간</th>
-					</tr>
-				</thead>
-			</table>
-		</div>
+			<div id="naverDiv" display:block>
+				<table id="naverBlogTable" data-height="600" data-fixed-columns="true">
+					<thead>
+						<tr>
+							<th data-with="50" data-halign="center" data-align="center"
+								data-formatter="numberFormatter">번호
+							</th>
+							<th data-with="300" data-halign="center" data-align="left" data-sortable="true"
+								data-field="title">
+								제목</th>
+							<th data-with="500" data-halign="center" data-align="left" data-sortable="true"
+								data-field="description">내용</th>
+							<th data-with="200" data-halign="center" data-align="left" data-sortable="true"
+								data-field="link" data-formatter="naverLinkFormatter">url</th>
+							<th data-with="100" data-halign="center" data-align="center" data-sortable="true"
+								data-field="bloggername">블로그 이름</th>
+							<th data-with="100" data-halign="center" data-align="center" data-sortable="true"
+								data-field="postdate">등록시간</th>
+						</tr>
+					</thead>
+				</table>
+			</div>
 
-		<ul id="pagination" class="pagination-sm"></ul>
+			<ul id="pagination" class="pagination-sm"></ul>
+		</div>
 	</div>
 </body>
 <script>
@@ -120,8 +134,8 @@
 
 		getSearchWordTop10();
 
-		setInterval(function() {
-			getSearchWordTop10();	
+		setInterval(function () {
+			getSearchWordTop10();
 		}, 10000);
 	})
 
@@ -161,7 +175,7 @@
 
 					$("#kakaoDiv").show();
 					$("#naverDiv").hide();
-					
+
 					var res = JSON.parse(data.resData);
 
 					if (res.meta.total_count == 0) {
