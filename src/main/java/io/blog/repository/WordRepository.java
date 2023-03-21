@@ -15,7 +15,7 @@ import io.blog.model.WordDto;
 public interface WordRepository extends JpaRepository<WordDto, Long> {
 	
 	
-	static final String MYSQL_QUERY = "set mode MySQL";
+	static final String MYSQL_QUERY = "set mode MySQL"; 
     
 	static final String SET_QUERY = 
 			 "	INSERT INTO TB_SEARCH_WORD             "
