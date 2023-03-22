@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.blog.model.ResponseDto;
 import io.blog.service.SearchService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -21,7 +22,7 @@ public class ApiSearchController {
 	
 	@ApiOperation(value="블로그 검색")
 	@GetMapping("/getTableByKeyword")
-	public Object getTableByKeyword(String query, String sort, int page, int size) throws Exception{
-		return searchService.getTableByKeyword(query.trim(), sort, page, size);
+	public ResponseDto getTableByKeyword(String query, String sort, int page, int size) throws Exception{
+		return searchService.getTableByKeyword(query.trim(), sort.trim(), page, size);
 	}
 }

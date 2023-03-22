@@ -1,6 +1,8 @@
 package io.blog.service;
 
+import io.blog.model.ResponseDto;
+
 public interface DbService {
-	public Boolean setSearchWord(String word);
-	public Object getSearchWordTop10();
+	public ResponseDto setSearchWord(String word) throws Exception;
+	public ResponseDto getSearchWordTop10() throws Exception;
 }

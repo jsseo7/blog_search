@@ -20,7 +20,7 @@ public class SearchServiceImpl implements SearchService{
 	private final String NAVER_ID = "NizjeMzYMtrvW5ZqtuwI";	
 	private final String NAVER_SECRETKEY = "6Jt2m8TJmd";
 		
-	public Object getTableByKeyword(String query, String sort, int page, int size) {
+	public ResponseDto getTableByKeyword(String query, String sort, int page, int size) {
 
 		ResponseDto responseDto = new ResponseDto();
 
@@ -29,9 +29,15 @@ public class SearchServiceImpl implements SearchService{
 		
 		if(result.getStatus() != 200) {
 			result = naverApiConnection(query, sort, page, size);
+			if(result.getStatus() != 200) {
+				responseDto.setCode("fail");
+				responseDto.setResData(result.getBody());				
+				return responseDto;
+			}
 			responseDto.setApiType("naver");
 		}
 		
+		responseDto.setCode("success");
 		responseDto.setResData(result.getBody());
 		return responseDto;
 	}

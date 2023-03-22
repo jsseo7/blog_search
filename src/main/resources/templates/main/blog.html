@@ -71,7 +71,7 @@
 			</div>
 
 			<div id="kakaoDiv" display:block>
-				<table id="kakaoBlogTable" data-height="600" data-fixed-columns="true">
+				<table id="kakaoBlogTable" data-fixed-columns="true">
 					<thead>
 						<tr>
 							<th data-with="50" data-halign="center" data-align="center"
@@ -170,70 +170,75 @@
 			url: "/search/getTableByKeyword",
 			data: {query: query, sort: sort, page: page, size: size},
 			success: function (data) {
+				if (data.code == "success") {
+					if (data.apiType == "kakao") {
 
-				if (data.apiType == "kakao") {
+						$("#kakaoDiv").show();
+						$("#naverDiv").hide();
 
-					$("#kakaoDiv").show();
-					$("#naverDiv").hide();
+						var res = JSON.parse(data.resData);
 
-					var res = JSON.parse(data.resData);
+						if (res.meta.total_count == 0) {
+							$('#pagination').twbsPagination('destroy');
 
-					if (res.meta.total_count == 0) {
-						$('#pagination').twbsPagination('destroy');
+							$("#kakaoBlogTable").bootstrapTable('destroy').bootstrapTable({data: res.documents});
+							$('#idTotalPage').html(res.meta.total_count);
+							$('#idCurrentPage').html(currentPage);
+							return;
+						} else if (destroyPage == true) {
+							$('#pagination').twbsPagination('destroy');
+						}
+
+						$('#pagination').twbsPagination({
+							totalPages: (Math.ceil(res.meta.total_count / size) > 50) ? 50 : Math.ceil(res.meta.total_count / size),
+							visiblePages: size,
+							startPage: 1,
+							onPageClick: function (event, page) {
+								currentPage = page;
+								searchBlog(currentPage, false);
+							}
+						});
 
 						$("#kakaoBlogTable").bootstrapTable('destroy').bootstrapTable({data: res.documents});
 						$('#idTotalPage').html(res.meta.total_count);
 						$('#idCurrentPage').html(currentPage);
-						return;
-					} else if (destroyPage == true) {
-						$('#pagination').twbsPagination('destroy');
-					}
 
-					$('#pagination').twbsPagination({
-						totalPages: (Math.ceil(res.meta.total_count / size) > 50) ? 50 : Math.ceil(res.meta.total_count / size),
-						visiblePages: size,
-						startPage: 1,
-						onPageClick: function (event, page) {
-							currentPage = page;
-							searchBlog(currentPage, false);
+					} else if (data.apiType == "naver") {
+
+						$("#kakaoDiv").hide();
+						$("#naverDiv").show();
+
+						var res = JSON.parse(data.resData);
+
+						if (res.total == 0) {
+							$('#pagination').twbsPagination('destroy');
+
+							$("#naverBlogTable").bootstrapTable('destroy').bootstrapTable({data: res.items});
+							$('#idTotalPage').html(res.total);
+							$('#idCurrentPage').html(currentPage);
+							return;
+						} else if (destroyPage == true) {
+							$('#pagination').twbsPagination('destroy');
 						}
-					});
 
-					$("#kakaoBlogTable").bootstrapTable('destroy').bootstrapTable({data: res.documents});
-					$('#idTotalPage').html(res.meta.total_count);
-					$('#idCurrentPage').html(currentPage);
-
-				} else if (data.apiType == "naver") {
-
-					$("#kakaoDiv").hide();
-					$("#naverDiv").show();
-
-					var res = JSON.parse(data.resData);
-
-					if (res.total == 0) {
-						$('#pagination').twbsPagination('destroy');
+						$('#pagination').twbsPagination({
+							totalPages: (Math.ceil(res.total / size) > 50) ? 50 : Math.ceil(res.total / size),
+							visiblePages: size,
+							startPage: 1,
+							onPageClick: function (event, page) {
+								currentPage = page;
+								searchBlog(currentPage, false);
+							}
+						});
 
 						$("#naverBlogTable").bootstrapTable('destroy').bootstrapTable({data: res.items});
 						$('#idTotalPage').html(res.total);
 						$('#idCurrentPage').html(currentPage);
-						return;
-					} else if (destroyPage == true) {
-						$('#pagination').twbsPagination('destroy');
 					}
-
-					$('#pagination').twbsPagination({
-						totalPages: (Math.ceil(res.total / size) > 50) ? 50 : Math.ceil(res.total / size),
-						visiblePages: size,
-						startPage: 1,
-						onPageClick: function (event, page) {
-							currentPage = page;
-							searchBlog(currentPage, false);
-						}
-					});
-
-					$("#naverBlogTable").bootstrapTable('destroy').bootstrapTable({data: res.items});
-					$('#idTotalPage').html(res.total);
-					$('#idCurrentPage').html(currentPage);
+				} else if (data.code == "fail") {
+					console.log("에러가 발생하였습니다.\n" + "code : " + data.code  + "\n" + "message : " + data.resData);
+				} else {
+					console.log("에러가 발생하였습니다.\n" + "code : unknown" + "\n" + "message : " + data.resData);
 				}
 			},
 			error: function (request, status, error) {
@@ -248,7 +253,13 @@
 			type: 'GET',
 			url: "/db/getSearchWordTop10",
 			success: function (res) {
-				$("#rankTable").bootstrapTable('destroy').bootstrapTable({data: res});
+				if(res.code=="success"){
+					$("#rankTable").bootstrapTable('destroy').bootstrapTable({data: res.wordDto});				
+				} else if(res.code=="fail") {
+					console.log("에러가 발생하였습니다.\n" + "code : " + data.code  + "\n" + "message : " + data.resData);
+				} else {
+					console.log("에러가 발생하였습니다.\n" + "code : " + data.code  + "\n" + "message : " + data.resData);					
+				}
 			},
 			error: function (request, status, error) {
 				console.log("에러가 발생하였습니다.\n" + "code : " + request.status + "\n" + "message : " + request.responseText + "\n" + "error : " + error);
@@ -262,6 +273,11 @@
 			type: "GET",
 			url: "/db/setSearchWord",
 			data: {word: searchWord},
+			success: function (res) {
+				if(res.code == "faile"){
+					console.log("에러가 발생하였습니다.\n" + "code : " + data.code  + "\n" + "message : " + data.resData);
+				}
+			},
 			error: function (request, status, error) {
 				console.log("에러가 발생하였습니다.\n" + "code : " + request.status + "\n" + "message : " + request.responseText + "\n" + "error : " + error);
 			}
